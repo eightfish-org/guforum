@@ -38,8 +38,8 @@ pub struct LoggedUser {
     user_id: String,
 }
 
-pub const APPPROFESSION: &str = "it";
-pub const APPID: &str = "discux";
+pub const APPCATEGORY: &str = "IT";
+pub const APPID: &str = "rustcc_forum";
 
 // The customized middleware
 async fn top_middleware<B>(

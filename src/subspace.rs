@@ -99,8 +99,8 @@ pub async fn post_subspace_create(
         description: String,
         banner: String,
         owner_id: String,
-        profession: String,
-        appid: String,
+        category: String,
+        app_id: String,
         is_public: bool,
         slug: String,
     }
@@ -110,8 +110,8 @@ pub async fn post_subspace_create(
         description: params.description,
         banner: "".to_string(),
         owner_id: user_id,
-        profession: crate::APPPROFESSION.to_string(),
-        appid: crate::APPID.to_string(),
+        category: crate::APPCATEGORY.to_string(),
+        app_id: crate::APPID.to_string(),
         is_public: true,
         slug: "".to_string(),
     };

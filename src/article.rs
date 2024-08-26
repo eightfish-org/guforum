@@ -39,15 +39,6 @@ pub async fn view_article(
         None
     };
 
-    // #[derive(Serialize)]
-    // struct QueryMaker00 {
-    //     id: String,
-    // }
-
-    // let query_params = QueryMaker00 {
-    //     id: params.id.to_owned(),
-    // };
-
     // or use this for simple case
     let query_params = [("id", &params.id)];
     let posts: Vec<GutpPost> = make_get("/v1/post", &query_params).await.unwrap_or(vec![]);
@@ -154,7 +145,7 @@ pub struct PostArticleCreateParams {
     subspace_id: String,
     title: String,
     content: String,
-    extlink: String,
+    ext_link: String,
 }
 
 pub async fn post_article_create(
@@ -186,9 +177,9 @@ pub async fn post_article_create(
         author_id: String,
         author_nickname: String,
         subspace_id: String,
-        extlink: String,
-        profession: String,
-        appid: String,
+        ext_link: String,
+        category: String,
+        app_id: String,
         is_public: bool,
     }
 
@@ -198,9 +189,9 @@ pub async fn post_article_create(
         author_id: user.id.to_owned(),
         author_nickname: user.nickname.to_owned(),
         subspace_id: params.subspace_id.to_owned(),
-        extlink: params.extlink,
-        profession: crate::APPPROFESSION.to_string(),
-        appid: crate::APPID.to_string(),
+        ext_link: params.ext_link,
+        category: crate::APPCATEGORY.to_string(),
+        app_id: crate::APPID.to_string(),
         is_public: true,
     };
 
@@ -259,7 +250,7 @@ pub struct PostArticleEditParams {
     id: String,
     title: String,
     content: String,
-    extlink: String,
+    ext_link: String,
 }
 
 pub async fn post_article_edit(
@@ -280,7 +271,7 @@ pub async fn post_article_edit(
         title: String,
         content: String,
         author_id: String,
-        extlink: String,
+        ext_link: String,
         is_public: bool,
     }
 
@@ -289,7 +280,7 @@ pub async fn post_article_edit(
         title: params.title,
         content: params.content,
         author_id: user_id,
-        extlink: params.extlink,
+        ext_link: params.ext_link,
         is_public: true,
     };
     // post to gutp

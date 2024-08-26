@@ -33,12 +33,12 @@
 	{{ post.content.clone()|markdown }}
   </div>
 
-  {% if post.extlink != "" %}
+  {% if post.ext_link != "" %}
   <div class="extlink-part">
-		<iframe src="{{post.extlink}}"></iframe>
+		<iframe src="{{post.ext_link}}"></iframe>
   </div>
   <br/>
-  <span>Ext Link: <a target="_Blank" class="linked" href="{{post.extlink}}">{{post.extlink}}</a></span>
+  <span>Ext Link: <a target="_Blank" class="linked" href="{{post.ext_link}}">{{post.ext_link}}</a></span>
   <br/>
   <br/>
   {% endif %}

@@ -36,12 +36,6 @@ struct AccountTemplate {
 }
 
 pub async fn view_account(logged_user: Option<Extension<LoggedUser>>) -> impl IntoResponse {
-    // if logged_user_id.is_none() {
-    //     let action = format!("Not logged in");
-    //     let err_info = "Need login firstly to get proper permission.";
-    //     return redirect_to_error_page(&action, err_info);
-    // }
-
     // has login info
     if let Some(Extension(LoggedUser { user_id })) = logged_user {
         // render user info page
@@ -103,8 +97,6 @@ pub async fn github_oauth_callback(
                     pub oauth_source: String,
                     pub nickname: String,
                     pub avatar: String,
-                    pub pub_settings: String,
-                    pub ext: String,
                 }
 
                 let inner_params = InnerUserCreateParams {
@@ -112,8 +104,6 @@ pub async fn github_oauth_callback(
                     oauth_source: "github".to_owned(),
                     nickname: github_user_info.name.to_owned(),
                     avatar: "".to_owned(),
-                    pub_settings: "".to_owned(),
-                    ext: "".to_owned(),
                 };
                 let users: Vec<GutpUser> = make_post("/v1/user/create", &inner_params)
                     .await
