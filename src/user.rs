@@ -40,7 +40,9 @@ pub async fn view_account(logged_user: Option<Extension<LoggedUser>>) -> impl In
     if let Some(Extension(LoggedUser { user_id })) = logged_user {
         // render user info page
         let inner_params = [("id", &user_id)];
-        let users: Vec<GutpUser> = make_get("/v1/user", &inner_params).await.unwrap_or(vec![]);
+        let users: Vec<GutpUser> = make_get("/gutp/v1/user", &inner_params)
+            .await
+            .unwrap_or(vec![]);
         if let Some(user) = users.into_iter().next() {
             HtmlTemplate(AccountTemplate { user }).into_response()
         } else {
@@ -82,7 +84,7 @@ pub async fn github_oauth_callback(
             // now we get user info from github
             // we use the account to check whether this user exist in gutp
             let inner_params = [("account", &account)];
-            let users: Vec<GutpUser> = make_get("/v1/user/get_by_account", &inner_params)
+            let users: Vec<GutpUser> = make_get("/gutp/v1/user/get_by_account", &inner_params)
                 .await
                 .unwrap_or(vec![]);
             if let Some(user) = users.into_iter().next() {
@@ -105,7 +107,7 @@ pub async fn github_oauth_callback(
                     nickname: github_user_info.name.to_owned(),
                     avatar: "".to_owned(),
                 };
-                let users: Vec<GutpUser> = make_post("/v1/user/create", &inner_params)
+                let users: Vec<GutpUser> = make_post("/gutp/v1/user/create", &inner_params)
                     .await
                     .unwrap_or(vec![]);
                 if let Some(user) = users.into_iter().next() {

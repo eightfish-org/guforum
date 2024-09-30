@@ -28,7 +28,7 @@ pub async fn view_index(logged_user: Option<Extension<LoggedUser>>) -> impl Into
 
     let query_params: &[(&str, &str)] = &[];
     // get subspace tags
-    let subspaces: Vec<GutpSubspace> = make_get("/v1/subspace/list", query_params)
+    let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace/list", query_params)
         .await
         .unwrap_or(vec![]);
 

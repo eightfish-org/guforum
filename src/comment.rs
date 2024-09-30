@@ -33,9 +33,10 @@ pub async fn view_comment_create(
         let err_info = "Need login firstly to get proper permission.";
         return redirect_to_error_page(&action, err_info).into_response();
     }
-
     let inner_params = [("id", &params.post_id)];
-    let posts: Vec<GutpPost> = make_get("/v1/post", &inner_params).await.unwrap_or(vec![]);
+    let posts: Vec<GutpPost> = make_get("/gutp/v1/post", &inner_params)
+        .await
+        .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
         HtmlTemplate(CommentCreateTemplate { post }).into_response()
     } else {
@@ -64,11 +65,15 @@ pub async fn post_comment_create(
     let Extension(LoggedUser { user_id }) = logged_user.unwrap();
 
     let inner_params = [("id", &params.post_id)];
-    let posts: Vec<GutpPost> = make_get("/v1/post", &inner_params).await.unwrap_or(vec![]);
+    let posts: Vec<GutpPost> = make_get("/gutp/v1/post", &inner_params)
+        .await
+        .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
         // retreive author info
         let inner_params = [("id", &user_id)];
-        let authors: Vec<GutpUser> = make_get("/v1/user", &inner_params).await.unwrap_or(vec![]);
+        let authors: Vec<GutpUser> = make_get("/gutp/v1/user", &inner_params)
+            .await
+            .unwrap_or(vec![]);
         if let Some(author) = authors.into_iter().next() {
             #[derive(Serialize)]
             struct InnerCommentCreateParams {
@@ -89,7 +94,7 @@ pub async fn post_comment_create(
                 is_public: true,
             };
 
-            let comments: Vec<GutpComment> = make_post("/v1/comment/create", &inner_params)
+            let comments: Vec<GutpComment> = make_post("/gutp/v1/comment/create", &inner_params)
                 .await
                 .unwrap_or(vec![]);
             if let Some(comment) = comments.into_iter().next() {
@@ -137,7 +142,7 @@ pub async fn view_comment_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let comments: Vec<GutpComment> = make_get("/v1/comment", &inner_params)
+    let comments: Vec<GutpComment> = make_get("/gutp/v1/comment", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(comment) = comments.into_iter().next() {
@@ -167,7 +172,7 @@ pub async fn post_comment_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let _comments: Vec<GutpComment> = make_post("/v1/comment/delete", &inner_params)
+    let _comments: Vec<GutpComment> = make_post("/gutp/v1/comment/delete", &inner_params)
         .await
         .unwrap_or(vec![]);
 

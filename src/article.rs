@@ -41,11 +41,13 @@ pub async fn view_article(
 
     // or use this for simple case
     let query_params = [("id", &params.id)];
-    let posts: Vec<GutpPost> = make_get("/v1/post", &query_params).await.unwrap_or(vec![]);
+    let posts: Vec<GutpPost> = make_get("/gutp/v1/post", &query_params)
+        .await
+        .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
         // continue to query comments
         let query_params = [("post_id", &post.id)];
-        let comments: Vec<GutpComment> = make_get("/v1/comment/list_by_post", &query_params)
+        let comments: Vec<GutpComment> = make_get("/gutp/v1/comment/list_by_post", &query_params)
             .await
             .unwrap_or(vec![]);
 
@@ -58,7 +60,7 @@ pub async fn view_article(
 
         // query coresponding subspace of this article
         let query_params = [("id", &post.subspace_id)];
-        let sps: Vec<GutpSubspace> = make_get("/v1/subspace", &query_params)
+        let sps: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &query_params)
             .await
             .unwrap_or(vec![]);
         // because subspace isn't the care factor, if it's invalid, just git it a default value
@@ -70,7 +72,9 @@ pub async fn view_article(
 
         // query coresponding author of this article
         let query_params = [("id", &post.author_id)];
-        let authors: Vec<GutpUser> = make_get("/v1/user", &query_params).await.unwrap_or(vec![]);
+        let authors: Vec<GutpUser> = make_get("/gutp/v1/user", &query_params)
+            .await
+            .unwrap_or(vec![]);
         // because author isn't the care factor, if it's invalid, just git it a default value
         let author = if authors.is_empty() {
             Default::default()
@@ -127,7 +131,7 @@ pub async fn view_article_create(
     }
 
     let inner_params = [("id", &params.subspace_id)];
-    let subspaces: Vec<GutpSubspace> = make_get("/v1/subspace", &inner_params)
+    let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(subspace) = subspaces.into_iter().next() {
@@ -161,7 +165,9 @@ pub async fn post_article_create(
     let Extension(LoggedUser { user_id }) = logged_user.unwrap();
 
     let inner_params = [("id", &user_id)];
-    let users: Vec<GutpUser> = make_get("/v1/user", &inner_params).await.unwrap_or(vec![]);
+    let users: Vec<GutpUser> = make_get("/gutp/v1/user", &inner_params)
+        .await
+        .unwrap_or(vec![]);
     // because author isn't the care factor, if it's invalid, just git it a default value
     if users.is_empty() {
         let action = format!("Query user: {}", user_id);
@@ -195,7 +201,7 @@ pub async fn post_article_create(
         is_public: true,
     };
 
-    let posts: Vec<GutpPost> = make_post("/v1/post/create", &inner_params)
+    let posts: Vec<GutpPost> = make_post("/gutp/v1/post/create", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
@@ -235,7 +241,9 @@ pub async fn view_article_edit(
 
     let inner_params = [("id", &params.id)];
     // get the old article by request to gutp
-    let posts: Vec<GutpPost> = make_get("/v1/post", &inner_params).await.unwrap_or(vec![]);
+    let posts: Vec<GutpPost> = make_get("/gutp/v1/post", &inner_params)
+        .await
+        .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
         HtmlTemplate(ArticleEditTemplate { post }).into_response()
     } else {
@@ -284,7 +292,7 @@ pub async fn post_article_edit(
         is_public: true,
     };
     // post to gutp
-    let posts: Vec<GutpPost> = make_post("/v1/post/update", &inner_params)
+    let posts: Vec<GutpPost> = make_post("/gutp/v1/post/update", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
@@ -322,11 +330,13 @@ pub async fn view_article_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let posts: Vec<GutpPost> = make_get("/v1/post", &inner_params).await.unwrap_or(vec![]);
+    let posts: Vec<GutpPost> = make_get("/gutp/v1/post", &inner_params)
+        .await
+        .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
         // continue to query comments
         let inner_params = [("post_id", &post.id)];
-        let comments: Vec<GutpComment> = make_get("/v1/comment/list_by_post", &inner_params)
+        let comments: Vec<GutpComment> = make_get("/gutp/v1/comment/list_by_post", &inner_params)
             .await
             .unwrap_or(vec![]);
 
@@ -365,7 +375,7 @@ pub async fn post_article_delete(
 
     // We must precheck the id, we can do it in the params type definition
     let inner_params = [("id", &params.id)];
-    let _posts: Vec<GutpPost> = make_post("/v1/post/delete", &inner_params)
+    let _posts: Vec<GutpPost> = make_post("/gutp/v1/post/delete", &inner_params)
         .await
         .unwrap_or(vec![]);
 

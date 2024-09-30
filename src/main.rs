@@ -258,7 +258,7 @@ pub fn redirect_to_error_page(action: &str, err_info: &str) -> Redirect {
 pub mod filters {
     // This filter does not have extra arguments
     pub fn date(t: &i64) -> ::askama::Result<String> {
-        let dt = chrono::NaiveDateTime::from_timestamp_opt(t.clone(), 0).unwrap();
+        let dt = chrono::DateTime::from_timestamp(t.clone(), 0).unwrap();
         Ok(dt.format("%Y-%m-%d %H:%M:%S").to_string())
     }
 }

@@ -30,12 +30,12 @@ pub async fn view_subspace(
     Query(params): Query<ViewSubspaceParams>,
 ) -> impl IntoResponse {
     let inner_params = [("id", &params.id)];
-    let subspaces: Vec<GutpSubspace> = make_get("/v1/subspace", &inner_params)
+    let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(sp) = subspaces.into_iter().next() {
         let inner_params = [("subspace_id", &sp.id)];
-        let posts: Vec<GutpPost> = make_get("/v1/post/list_by_subspace", &inner_params)
+        let posts: Vec<GutpPost> = make_get("/gutp/v1/post/list_by_subspace", &inner_params)
             .await
             .unwrap_or(vec![]);
         HtmlTemplate(SubspaceTemplate {
@@ -116,7 +116,7 @@ pub async fn post_subspace_create(
         slug: "".to_string(),
     };
 
-    let subspaces: Vec<GutpSubspace> = make_post("/v1/subspace/create", &inner_params)
+    let subspaces: Vec<GutpSubspace> = make_post("/gutp/v1/subspace/create", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(sp) = subspaces.into_iter().next() {
@@ -214,12 +214,12 @@ pub async fn view_subspace_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let subspaces: Vec<GutpSubspace> = make_get("/v1/subspace", &inner_params)
+    let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(sp) = subspaces.into_iter().next() {
         let inner_params = [("subspace_id", &sp.id)];
-        let posts: Vec<GutpPost> = make_get("/v1/post/list_by_subspace_id", &inner_params)
+        let posts: Vec<GutpPost> = make_get("/gutp/v1/post/list_by_subspace_id", &inner_params)
             .await
             .unwrap_or(vec![]);
         if posts.is_empty() {
@@ -256,18 +256,18 @@ pub async fn post_subspace_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let subspaces: Vec<GutpSubspace> = make_get("/v1/subspace", &inner_params)
+    let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(sp) = subspaces.into_iter().next() {
         let inner_params = [("subspace_id", &sp.id)];
-        let posts: Vec<GutpPost> = make_get("/v1/post/list_by_subspace", &inner_params)
+        let posts: Vec<GutpPost> = make_get("/gutp/v1/post/list_by_subspace", &inner_params)
             .await
             .unwrap_or(vec![]);
         if posts.is_empty() {
             // can be deleted
             let inner_params = [("id", &sp.id)];
-            let _sps: Vec<GutpSubspace> = make_post("/v1/subspace/delete", &inner_params)
+            let _sps: Vec<GutpSubspace> = make_post("/gutp/v1/subspace/delete", &inner_params)
                 .await
                 .unwrap_or(vec![]);
 
