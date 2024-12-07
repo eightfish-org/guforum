@@ -138,6 +138,33 @@ pub async fn github_oauth_callback(
 pub struct IIOauthCallbackParams {
     account: String,
 }
+
+fn mask_middle_part(input: &str) -> String {
+    // Split the input string into parts by the delimiter '-'
+    let parts: Vec<&str> = input.split('-').collect();
+    
+    // Ensure there are enough parts to mask the middle
+    if parts.len() <= 2 {
+        return input.to_string(); // Return as is if there are no middle parts
+    }
+
+    // Keep the first and last parts unchanged, mask the middle parts
+    let masked_parts: Vec<String> = parts
+        .iter()
+        .enumerate()
+        .map(|(i, part)| {
+            if i == 0 || i == parts.len() - 1 {
+                part.to_string() // Keep first and last parts unchanged
+            } else {
+                "*".repeat(part.len()) // Mask middle parts with stars
+            }
+        })
+        .collect();
+
+    // Join the parts back together with '-' delimiter
+    masked_parts.join("-")
+}
+
 pub async fn ii_oauth_callback(
     State(app_state): State<AppState>,
     Query(params): Query<IIOauthCallbackParams>,
@@ -171,7 +198,7 @@ pub async fn ii_oauth_callback(
         let inner_params = InnerUserCreateParams {
             account: account.to_owned(),
             oauth_source: "internet identity".to_owned(),
-            nickname: "".to_owned(),
+            nickname: mask_middle_part(&account),
             avatar: "".to_owned(),
         };
         let users: Vec<GutpUser> = make_post("/gutp/v1/user/create", &inner_params)
