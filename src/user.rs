@@ -25,7 +25,7 @@ struct LoginTemplate {
 }
 
 pub async fn view_login() -> impl IntoResponse {
-    let client_id = dotenv::var("GITHUB_APP_CLIENT_ID").unwrap();
+    let client_id = "x".to_string();//dotenv::var("GITHUB_APP_CLIENT_ID").unwrap();
     HtmlTemplate(LoginTemplate { client_id })
 }
 
@@ -131,6 +131,61 @@ pub async fn github_oauth_callback(
         let action = format!("Get access token from github");
         let err_info = "Failed to request access token from github";
         redirect_to_error_page(&action, err_info).into_response()
+    }
+}
+
+#[derive(Deserialize)]
+pub struct IIOauthCallbackParams {
+    account: String,
+}
+pub async fn ii_oauth_callback(
+    State(app_state): State<AppState>,
+    Query(params): Query<IIOauthCallbackParams>,
+) -> impl IntoResponse {
+    let mut redis_conn = app_state.rclient.get_async_connection().await.unwrap();
+    // returned from github
+    let code = params.account;
+    println!("in ii_oauth_callback, code: {}", code);
+
+    let account = code; // this should be ii principal
+                                  // now we get user info from github
+                                  // we use the account to check whether this user exist in gutp
+    let inner_params = [("account", &account)];
+    let users: Vec<GutpUser> = make_get("/gutp/v1/user/get_by_account", &inner_params)
+        .await
+        .unwrap_or(vec![]);
+    if let Some(user) = users.into_iter().next() {
+        // if user exists, log it in
+        login_user(redis_conn, &user.id).await.into_response()
+    } else {
+        // if user doesn't exist, register it
+
+        #[derive(Serialize)]
+        struct InnerUserCreateParams {
+            pub account: String,
+            pub oauth_source: String,
+            pub nickname: String,
+            pub avatar: String,
+        }
+
+        let inner_params = InnerUserCreateParams {
+            account: account.to_owned(),
+            oauth_source: "internet identity".to_owned(),
+            nickname: "".to_owned(),
+            avatar: "".to_owned(),
+        };
+        let users: Vec<GutpUser> = make_post("/gutp/v1/user/create", &inner_params)
+            .await
+            .unwrap_or(vec![]);
+        if let Some(user) = users.into_iter().next() {
+            // registerd successfully
+            login_user(redis_conn, &user.id).await.into_response()
+        } else {
+            // redirect to the error page
+            let action = format!("Register user: {}", &account);
+            let err_info = "Unknown";
+            redirect_to_error_page(&action, err_info).into_response()
+        }
     }
 }
 

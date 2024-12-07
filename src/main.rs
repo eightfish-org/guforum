@@ -19,7 +19,7 @@ use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
 };
-
+use std::env;
 mod article;
 mod comment;
 mod index;
@@ -129,6 +129,10 @@ async fn main() {
             "/user/github_oauth_callback",
             get(user::github_oauth_callback),
         )
+        .route(
+            "/user/ii_auth_callback",
+            get(user::ii_oauth_callback),
+        )
         .route("/error/info", get(view_error_info))
         .layer(middleware::from_fn_with_state(
             app_state.clone(),
@@ -155,7 +159,14 @@ pub async fn make_get<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
 ) -> anyhow::Result<Vec<T>> {
     let host = "http://127.0.0.1:3000";
     let url = format!("{}{}", host, path);
-
+    println!("in make get url: {}", url);
+    for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY"] {
+        if let Ok(value) = env::var(var) {
+            println!("{} = {}", var, value);
+        } else {
+            println!("{} is not set", var);
+        }
+    }
     let client = reqwest::Client::new();
     let res = client
         .get(&url)
@@ -164,9 +175,9 @@ pub async fn make_get<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
         .send()
         .await?;
 
-    println!("in make get: {:?}", res);
+    println!("in make get response status: {}", res.status());
     let text = res.text().await?;
-    println!("in make get: {:?}", text);
+    println!("in make get text: {:?}", text);
 
     let list: Vec<T> = serde_json::from_str(&text)?;
 
@@ -185,7 +196,7 @@ pub async fn make_post<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
 ) -> anyhow::Result<Vec<T>> {
     let host = "http://127.0.0.1:3000";
     let url = format!("{}{}", host, path);
-
+    print!("req: {}", serde_json::to_string(&form_param).unwrap());
     let client = reqwest::Client::new();
     let res = client
         .post(&url)
@@ -196,7 +207,7 @@ pub async fn make_post<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
 
     println!("in make post: {:?}", res);
     let text = res.text().await?;
-    println!("in make post: {:?}", text);
+    println!("in make post text: {:?}", text);
 
     let list: Vec<T> = serde_json::from_str(&text)?;
 
