@@ -25,7 +25,7 @@ struct LoginTemplate {
 }
 
 pub async fn view_login() -> impl IntoResponse {
-    let client_id = dotenv::var("GITHUB_APP_CLIENT_ID").unwrap();
+    let client_id = "x".to_string();//dotenv::var("GITHUB_APP_CLIENT_ID").unwrap();
     HtmlTemplate(LoginTemplate { client_id })
 }
 
@@ -131,6 +131,88 @@ pub async fn github_oauth_callback(
         let action = format!("Get access token from github");
         let err_info = "Failed to request access token from github";
         redirect_to_error_page(&action, err_info).into_response()
+    }
+}
+
+#[derive(Deserialize)]
+pub struct IIOauthCallbackParams {
+    account: String,
+}
+
+fn mask_middle_part(input: &str) -> String {
+    // Split the input string into parts by the delimiter '-'
+    let parts: Vec<&str> = input.split('-').collect();
+    
+    // Ensure there are enough parts to mask the middle
+    if parts.len() <= 2 {
+        return input.to_string(); // Return as is if there are no middle parts
+    }
+
+    // Keep the first and last parts unchanged, mask the middle parts
+    let masked_parts: Vec<String> = parts
+        .iter()
+        .enumerate()
+        .map(|(i, part)| {
+            if i == 0 || i == parts.len() - 1 {
+                part.to_string() // Keep first and last parts unchanged
+            } else {
+                "*".repeat(part.len()) // Mask middle parts with stars
+            }
+        })
+        .collect();
+
+    // Join the parts back together with '-' delimiter
+    masked_parts.join("-")
+}
+
+pub async fn ii_oauth_callback(
+    State(app_state): State<AppState>,
+    Query(params): Query<IIOauthCallbackParams>,
+) -> impl IntoResponse {
+    let mut redis_conn = app_state.rclient.get_async_connection().await.unwrap();
+    // returned from github
+    let code = params.account;
+    println!("in ii_oauth_callback, code: {}", code);
+
+    let account = code; // this should be ii principal
+                                  // now we get user info from github
+                                  // we use the account to check whether this user exist in gutp
+    let inner_params = [("account", &account)];
+    let users: Vec<GutpUser> = make_get("/gutp/v1/user/get_by_account", &inner_params)
+        .await
+        .unwrap_or(vec![]);
+    if let Some(user) = users.into_iter().next() {
+        // if user exists, log it in
+        login_user(redis_conn, &user.id).await.into_response()
+    } else {
+        // if user doesn't exist, register it
+
+        #[derive(Serialize)]
+        struct InnerUserCreateParams {
+            pub account: String,
+            pub oauth_source: String,
+            pub nickname: String,
+            pub avatar: String,
+        }
+
+        let inner_params = InnerUserCreateParams {
+            account: account.to_owned(),
+            oauth_source: "internet identity".to_owned(),
+            nickname: mask_middle_part(&account),
+            avatar: "".to_owned(),
+        };
+        let users: Vec<GutpUser> = make_post("/gutp/v1/user/create", &inner_params)
+            .await
+            .unwrap_or(vec![]);
+        if let Some(user) = users.into_iter().next() {
+            // registerd successfully
+            login_user(redis_conn, &user.id).await.into_response()
+        } else {
+            // redirect to the error page
+            let action = format!("Register user: {}", &account);
+            let err_info = "Unknown";
+            redirect_to_error_page(&action, err_info).into_response()
+        }
     }
 }
 
