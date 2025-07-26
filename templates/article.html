@@ -59,7 +59,7 @@
 			    {% if comment.author_id == author.id %}
 			    {{"Author "}}
 			    {% endif %}
-					{{ comment.author_nickname }}
+					{{ comment.author_id }}
 			    <span class="created-time">{{ comment.created_time|date }}</span>
 			    {% if logged_user_id.is_some() && logged_user_id.clone().unwrap() == author.id %}
 			    <a class="delete" href="/comment/delete?id={{comment.id}}">{{"Delete"}}</a>
