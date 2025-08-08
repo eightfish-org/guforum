@@ -744,6 +744,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40ecd4077b5ae9fd2e9e169b102c6c330d0605168eb0e8bf79952b256dbefffd"
 
 [[package]]
+name = "guforum"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "askama",
+ "axum",
+ "axum-extra",
+ "chrono",
+ "cookie",
+ "dotenv",
+ "gutp-types",
+ "hyper",
+ "rand",
+ "redis",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "sha256",
+ "tokio",
+ "tower-http",
+]
+
+[[package]]
 name = "gutp-types"
 version = "0.1.0"
 dependencies = [
@@ -1464,30 +1488,6 @@ name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "719b953e2095829ee67db738b3bfa9fa368c94900df327b3f07fe6e794d2fe1f"
-
-[[package]]
-name = "rustcc_forum"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "askama",
- "axum",
- "axum-extra",
- "chrono",
- "cookie",
- "dotenv",
- "gutp-types",
- "hyper",
- "rand",
- "redis",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "sha256",
- "tokio",
- "tower-http",
-]
 
 [[package]]
 name = "rustix"

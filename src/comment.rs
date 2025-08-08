@@ -81,7 +81,6 @@ pub async fn post_comment_create(
                 author_id: String,
                 author_nickname: String,
                 post_id: String,
-                parent_comment_id: String,
                 is_public: bool,
             }
 
@@ -90,7 +89,6 @@ pub async fn post_comment_create(
                 author_id: author.id.to_owned(),
                 author_nickname: author.nickname.to_owned(),
                 post_id: post.id.to_owned(),
-                parent_comment_id: "".to_owned(),
                 is_public: true,
             };
 
