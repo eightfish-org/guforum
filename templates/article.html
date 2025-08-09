@@ -53,20 +53,20 @@
 		{% if comments.len() == 0 %}
     <p class="useless">{{"No Comment"}}</p>
 		{% else %}
-	    {% for comment in comments %}
+	    {% for c in comments %}
 	  <div class="item">
 			<div class="comment-title">
-			    {% if comment.author_id == author.id %}
+			    {% if c.comment.author_id == author.id %}
 			    {{"Author "}}
 			    {% endif %}
-					{{ comment.author_id }}
-			    <span class="created-time">{{ comment.created_time|date }}</span>
+					{{ c.author_name }}
+			    <span class="created-time">{{ c.comment.created_time|date }}</span>
 			    {% if logged_user_id.is_some() && logged_user_id.clone().unwrap() == author.id %}
-			    <a class="delete" href="/comment/delete?id={{comment.id}}">{{"Delete"}}</a>
+			    <a class="delete" href="/comment/delete?id={{c.comment.id}}">{{"Delete"}}</a>
 			    {% endif %}
 			</div>
 			<div class="comment-content">
-			    {{ comment.content.clone()|markdown }}
+			    {{ c.comment.content|markdown }}
 			</div>
     </div>
 	    {% endfor %}

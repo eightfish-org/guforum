@@ -4,7 +4,7 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     Extension,
 };
-use gutp_types::{GutpComment, GutpPost, GutpSubspace, GutpUser};
+use gutp_types::{GutpComment, GutpCommentExt, GutpPost, GutpSubspace, GutpUser};
 use serde::{Deserialize, Serialize};
 
 use crate::filters;
@@ -18,7 +18,7 @@ use crate::{make_get, make_post};
 #[template(path = "article.html")]
 struct ArticleTemplate {
     post: GutpPost,
-    comments: Vec<GutpComment>,
+    comments: Vec<GutpCommentExt>,
     subspace: GutpSubspace,
     author: GutpUser,
     logged_user_id: Option<String>,
@@ -47,9 +47,10 @@ pub async fn view_article(
     if let Some(post) = posts.into_iter().next() {
         // continue to query comments
         let query_params = [("post_id", &post.id)];
-        let comments: Vec<GutpComment> = make_get("/gutp/v1/comment/list_by_post", &query_params)
-            .await
-            .unwrap_or(vec![]);
+        let comments: Vec<GutpCommentExt> =
+            make_get("/gutp/v1/comment/list_by_post", &query_params)
+                .await
+                .unwrap_or(vec![]);
 
         // TODO: query tags of this article
         // this is a N:M relationship, so it's relatively complex

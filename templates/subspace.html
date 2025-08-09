@@ -24,14 +24,14 @@
             {% for post in posts %}
             <li>
                 <span class="left">
-                    <a href="/article?id={{ post.id }}" class="title left">{{ post.title }}</a>
+                    <a href="/article?id={{ post.post.id }}" class="title left">{{ post.post.title }}</a>
                     <div style="clear:both;"></div>
                 </span>
                 <span class="right info">
-                    <span class="author">{{ post.author_id }}</span> 
-                    <span class="timestamp">{{ post.created_time|date }}</span>
-                    <a class="delete" href="/article/delete?id={{post.id}}">{{"Delete"}}</a>
-                    <a class="edit" href="/article/edit?id={{post.id}}">{{"Edit"}}</a>
+                    <span class="author">{{ post.author_name }}</span> 
+                    <span class="timestamp">{{ post.post.created_time|date }}</span>
+                    <a class="delete" href="/article/delete?id={{post.post.id}}">{{"Delete"}}</a>
+                    <a class="edit" href="/article/edit?id={{post.post.id}}">{{"Edit"}}</a>
                 </span>
                 <div style="clear:both;"></div>
             </li>

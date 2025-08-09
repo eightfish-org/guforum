@@ -4,7 +4,7 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     Extension,
 };
-use gutp_types::{GutpComment, GutpPost, GutpSubspace};
+use gutp_types::{GutpComment, GutpPost, GutpPostExt, GutpSubspace};
 use serde::{Deserialize, Serialize};
 
 use crate::filters;
@@ -17,7 +17,7 @@ use crate::{make_get, make_post};
 #[template(path = "subspace.html")]
 struct SubspaceTemplate {
     subspace: GutpSubspace,
-    posts: Vec<GutpPost>,
+    posts: Vec<GutpPostExt>,
 }
 
 #[derive(Deserialize)]
@@ -35,7 +35,7 @@ pub async fn view_subspace(
         .unwrap_or(vec![]);
     if let Some(sp) = subspaces.into_iter().next() {
         let inner_params = [("subspace_id", &sp.id)];
-        let posts: Vec<GutpPost> = make_get("/gutp/v1/post/list_by_subspace", &inner_params)
+        let posts: Vec<GutpPostExt> = make_get("/gutp/v1/post/list_by_subspace", &inner_params)
             .await
             .unwrap_or(vec![]);
         HtmlTemplate(SubspaceTemplate {
