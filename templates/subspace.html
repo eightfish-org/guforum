@@ -30,8 +30,10 @@
                 <span class="right info">
                     <span class="author">{{ post.author_name }}</span> 
                     <span class="timestamp">{{ post.post.created_time|date }}</span>
+			              {% if Some(post.post.author_id.to_owned()) == user_id %}
                     <a class="delete" href="/article/delete?id={{post.post.id}}">{{"Delete"}}</a>
                     <a class="edit" href="/article/edit?id={{post.post.id}}">{{"Edit"}}</a>
+			              {% endif %}
                 </span>
                 <div style="clear:both;"></div>
             </li>

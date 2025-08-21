@@ -18,6 +18,7 @@ use crate::{make_get, make_post};
 struct SubspaceTemplate {
     subspace: GutpSubspace,
     posts: Vec<GutpPostExt>,
+    user_id: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -29,6 +30,12 @@ pub async fn view_subspace(
     logged_user: Option<Extension<LoggedUser>>,
     Query(params): Query<ViewSubspaceParams>,
 ) -> impl IntoResponse {
+    let user_id = if let Some(Extension(LoggedUser { user_id })) = logged_user {
+        Some(user_id)
+    } else {
+        None
+    };
+
     let inner_params = [("id", &params.id)];
     let subspaces: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
         .await
@@ -41,6 +48,7 @@ pub async fn view_subspace(
         HtmlTemplate(SubspaceTemplate {
             subspace: sp,
             posts,
+            user_id,
         })
         .into_response()
     } else {

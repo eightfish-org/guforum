@@ -93,14 +93,14 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index::view_index))
         .route("/subspace", get(subspace::view_subspace))
-        .route(
-            "/subspace/create",
-            get(subspace::view_subspace_create).post(subspace::post_subspace_create),
-        )
-        .route(
-            "/subspace/delete",
-            get(subspace::view_subspace_delete).post(subspace::post_subspace_delete),
-        )
+        // .route(
+        //     "/subspace/create",
+        //     get(subspace::view_subspace_create).post(subspace::post_subspace_create),
+        // )
+        // .route(
+        //     "/subspace/delete",
+        //     get(subspace::view_subspace_delete).post(subspace::post_subspace_delete),
+        // )
         .route("/article", get(article::view_article))
         .route(
             "/article/create",
