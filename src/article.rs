@@ -12,7 +12,7 @@ use crate::redirect_to_error_page;
 use crate::AppState;
 use crate::HtmlTemplate;
 use crate::LoggedUser;
-use crate::{make_get, make_post};
+use crate::{make_delete, make_get, make_post, make_put};
 
 #[derive(Template)]
 #[template(path = "article.html")]
@@ -293,7 +293,7 @@ pub async fn post_article_edit(
         is_public: true,
     };
     // post to gutp
-    let posts: Vec<GutpPost> = make_post("/gutp/v1/post/update", &inner_params)
+    let posts: Vec<GutpPost> = make_put("/gutp/v1/post/update", &inner_params)
         .await
         .unwrap_or(vec![]);
     if let Some(post) = posts.into_iter().next() {
@@ -376,7 +376,7 @@ pub async fn post_article_delete(
 
     // We must precheck the id, we can do it in the params type definition
     let inner_params = [("id", &params.id)];
-    let _posts: Vec<GutpPost> = make_post("/gutp/v1/post/delete", &inner_params)
+    let _posts: Vec<GutpPost> = make_delete("/gutp/v1/post/delete", &inner_params)
         .await
         .unwrap_or(vec![]);
 

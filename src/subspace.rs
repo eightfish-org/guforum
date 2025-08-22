@@ -11,7 +11,7 @@ use crate::filters;
 use crate::redirect_to_error_page;
 use crate::HtmlTemplate;
 use crate::LoggedUser;
-use crate::{make_get, make_post};
+use crate::{make_delete, make_get, make_post, make_put};
 
 #[derive(Template)]
 #[template(path = "subspace.html")]
@@ -275,7 +275,7 @@ pub async fn post_subspace_delete(
         if posts.is_empty() {
             // can be deleted
             let inner_params = [("id", &sp.id)];
-            let _sps: Vec<GutpSubspace> = make_post("/gutp/v1/subspace/delete", &inner_params)
+            let _sps: Vec<GutpSubspace> = make_delete("/gutp/v1/subspace/delete", &inner_params)
                 .await
                 .unwrap_or(vec![]);
 

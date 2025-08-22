@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::redirect_to_error_page;
 use crate::HtmlTemplate;
 use crate::LoggedUser;
-use crate::{make_get, make_post};
+use crate::{make_delete, make_get, make_post};
 
 #[derive(Template)]
 #[template(path = "comment_create.html")]
@@ -170,7 +170,7 @@ pub async fn post_comment_delete(
     }
 
     let inner_params = [("id", &params.id)];
-    let _comments: Vec<GutpComment> = make_post("/gutp/v1/comment/delete", &inner_params)
+    let _comments: Vec<GutpComment> = make_delete("/gutp/v1/comment/delete", &inner_params)
         .await
         .unwrap_or(vec![]);
 

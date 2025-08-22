@@ -209,6 +209,54 @@ pub async fn make_post<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
     Ok(list)
 }
 
+pub async fn make_put<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
+    path: &str,
+    form_param: &U,
+) -> anyhow::Result<Vec<T>> {
+    let host = "http://127.0.0.1:3000";
+    let url = format!("{}{}", host, path);
+
+    let client = reqwest::Client::new();
+    let res = client
+        .put(&url)
+        .form(form_param)
+        .header("User-Agent", "gutp-discux")
+        .send()
+        .await?;
+
+    println!("in make put: {:?}", res);
+    let text = res.text().await?;
+    println!("in make put: {:?}", text);
+
+    let list: Vec<T> = serde_json::from_str(&text)?;
+
+    Ok(list)
+}
+
+pub async fn make_delete<T: DeserializeOwned + Debug, U: Serialize + ?Sized>(
+    path: &str,
+    form_param: &U,
+) -> anyhow::Result<Vec<T>> {
+    let host = "http://127.0.0.1:3000";
+    let url = format!("{}{}", host, path);
+
+    let client = reqwest::Client::new();
+    let res = client
+        .delete(&url)
+        .form(form_param)
+        .header("User-Agent", "gutp-discux")
+        .send()
+        .await?;
+
+    println!("in make delete: {:?}", res);
+    let text = res.text().await?;
+    println!("in make delete: {:?}", text);
+
+    let list: Vec<T> = serde_json::from_str(&text)?;
+
+    Ok(list)
+}
+
 /// Define the template handler
 pub struct HtmlTemplate<T>(T);
 
