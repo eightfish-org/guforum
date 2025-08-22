@@ -177,6 +177,30 @@ pub async fn post_article_create(
     }
     let user = users[0].to_owned();
 
+    let inner_params = [("id", &params.subspace_id)];
+    let sps: Vec<GutpSubspace> = make_get("/gutp/v1/subspace", &inner_params)
+        .await
+        .unwrap_or(vec![]);
+    if sps.is_empty() {
+        // redirect to the error page
+        let action = format!("Create article in subspace: {}", &params.subspace_id);
+        let err_info = "Subspace not found";
+        return redirect_to_error_page(&action, err_info).into_response();
+    }
+    let sp = sps[0].to_owned();
+    // check the subspace if is a blog, and check equalities of user_id and params.subspace_id, if not, redirect
+    // to avoid others post article in one's blog subspace
+    if sp.owner_id.is_none() {
+        // this is a public square, not the personal blog space
+    } else {
+        // this is a personal blog space
+        if Some(user_id) != sp.owner_id {
+            let action = format!("Create article in subspace: {}", &params.subspace_id);
+            let err_info = "Can not post article in other's personal blog space.";
+            return redirect_to_error_page(&action, err_info).into_response();
+        }
+    }
+
     #[derive(Serialize)]
     struct InnerArticleCreateParams {
         title: String,
